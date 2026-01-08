@@ -16,14 +16,16 @@ const SolutionChallenge = () => {
                 </div>
                 <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden border border-white/10 group select-none shadow-2xl">
                     {/* Background Layer: Blurred (Represents "Motion Blur" - Visible on the Right) */}
+                    {/* Background Layer Group: Blurred (Represents "Motion Blur" - Visible on the Right) */}
+                    {/* 1. The Image (Blurred) */}
                     <div className="absolute inset-0 w-full h-full bg-cover bg-center" style={{
                         backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCfjrMdebKZmvV0GRrx_gkEk0F8QQfHQZdoUpwxFhpnyPfcgy7NidV-frHPSHbi3uiyw6wh_4UHOUj4o2LVYZtX_k72sWdlsgT-RNPDwl4mO8LIMhvmLpaJruZif5oXatUK4mLJ5fCjCjZ945ZAj28mJZoxgTtUv9B9aPIDJeO6tWOjPYfcRaNVLOKs2r9uxvcwOJQcYaeko5sM6PqUBv3YFi58rWC0Unu_xUxKDX30VB6-NYXBVU_1w0bCltvjXMov0FD3sLVoloD')",
                         filter: "blur(12px) brightness(0.8) contrast(1.1)"
-                    }}>
-                        {/* Label acts as the "Right Side" label, so position it Top-Right */}
-                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-slate-300 px-3 py-1 rounded text-xs font-bold border border-white/10 z-30 uppercase tracking-wider">
-                            Raw Motion Blur
-                        </div>
+                    }}></div>
+
+                    {/* 2. The Label (Sharp, on top of blur) */}
+                    <div className="absolute top-4 right-4 bg-red-500/90 backdrop-blur-md text-white px-3 py-1 rounded text-xs font-bold border border-red-500/50 z-10 shadow-[0_0_15px_rgba(239,68,68,0.6)] uppercase tracking-wider">
+                        Standard Capture
                     </div>
 
                     {/* Overlay Layer: Clear (Represents "AI Clarity" - Visible on the Left) */}
