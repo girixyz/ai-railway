@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { useDemo } from '@/context/DemoContext';
-import { Link } from 'react-router-dom';
+
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import LoginModal from '@/components/auth/LoginModal';
 import DemoModal from '@/components/demo/DemoModal';
 
 const Navbar = () => {
     const { openDemoModal, closeDemoModal, isDemoModalOpen } = useDemo();
+    const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
+
+    const isActive = (path) => location.pathname === path;
 
     const toggleMobileMenu = () => {
         setMobileMenuOpen(!mobileMenuOpen);
@@ -30,11 +34,36 @@ const Navbar = () => {
                         <h2 className="text-white text-lg font-bold tracking-tight">RailVision AI</h2>
                     </Link>
                     <nav className="hidden md:flex items-center gap-8">
-                        <Link to="/solution" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Platform</Link>
-                        <Link to="/use-cases" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Use Cases</Link>
-                        <Link to="/technology" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Technology</Link>
-                        <Link to="/about" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Company</Link>
-                        <Link to="/analytics" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Analytics</Link>
+                        <Link
+                            to="/solution"
+                            className={`text-sm font-medium transition-all duration-300 ${isActive('/solution') ? 'text-primary drop-shadow-[0_0_8px_rgba(19,91,236,0.6)]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Platform
+                        </Link>
+                        <Link
+                            to="/use-cases"
+                            className={`text-sm font-medium transition-all duration-300 ${isActive('/use-cases') ? 'text-primary drop-shadow-[0_0_8px_rgba(19,91,236,0.6)]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Use Cases
+                        </Link>
+                        <Link
+                            to="/technology"
+                            className={`text-sm font-medium transition-all duration-300 ${isActive('/technology') ? 'text-primary drop-shadow-[0_0_8px_rgba(19,91,236,0.6)]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Technology
+                        </Link>
+                        <Link
+                            to="/about"
+                            className={`text-sm font-medium transition-all duration-300 ${isActive('/about') ? 'text-primary drop-shadow-[0_0_8px_rgba(19,91,236,0.6)]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Company
+                        </Link>
+                        <Link
+                            to="/analytics"
+                            className={`text-sm font-medium transition-all duration-300 ${isActive('/analytics') ? 'text-primary drop-shadow-[0_0_8px_rgba(19,91,236,0.6)]' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            Analytics
+                        </Link>
                     </nav>
                     <div className="flex items-center gap-4">
                         <button
