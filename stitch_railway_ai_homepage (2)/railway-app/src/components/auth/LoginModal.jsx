@@ -1,27 +1,52 @@
 import React, { useState } from 'react';
 import { X, User, Shield, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const LoginModal = ({ isOpen, onClose }) => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [role, setRole] = useState('member'); // 'member' or 'admin'
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate login
-        setTimeout(() => {
-            console.log("Logging in with:", { username, role });
-            setIsLoading(false);
+        setError('');
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log("Logged in successfully");
             onClose();
-        }, 1500);
+            navigate('/dashboard');
+        } catch (err) {
+            console.error("Login error:", err);
+            setError("Failed to login. Please check your credentials.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleSocialLogin = (provider) => {
-        console.log(`Logging in with ${provider}`);
+    const handleSocialLogin = async (provider) => {
+        if (provider === 'google') {
+            try {
+                const googleProvider = new GoogleAuthProvider();
+                await signInWithPopup(auth, googleProvider);
+                onClose();
+                navigate('/dashboard');
+            } catch (err) {
+                console.error("Social login error:", err);
+                setError("Failed to sign in with Google.");
+            }
+        } else {
+            console.log(`Logging in with ${provider}`);
+        }
     };
 
     return (
@@ -46,16 +71,37 @@ const LoginModal = ({ isOpen, onClose }) => {
                     <p className="text-slate-400 text-sm mt-2">Sign in to access your analytics dashboard</p>
                 </div>
 
+                {error && (
+                    <div className="text-red-500 text-sm text-center mb-4 bg-red-500/10 p-2 rounded">
+                        {error}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Username Input */}
+                    {/* Email Input */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 block">Username</label>
+                        <label className="text-sm font-medium text-slate-300 block">Email Address</label>
                         <div className="relative">
                             <input
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Enter your username"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                className="w-full bg-[#161e2e] border border-[#232f48] rounded-lg h-11 px-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* Password Input */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300 block">Password</label>
+                        <div className="relative">
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
                                 className="w-full bg-[#161e2e] border border-[#232f48] rounded-lg h-11 px-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                 required
                             />
@@ -70,8 +116,8 @@ const LoginModal = ({ isOpen, onClose }) => {
                                 type="button"
                                 onClick={() => setRole('member')}
                                 className={`relative flex items-center justify-center gap-2 h-11 rounded-lg border transition-all ${role === 'member'
-                                        ? 'bg-primary/20 border-primary text-white'
-                                        : 'bg-[#161e2e] border-[#232f48] text-slate-400 hover:border-primary/50 hover:text-white'
+                                    ? 'bg-primary/20 border-primary text-white'
+                                    : 'bg-[#161e2e] border-[#232f48] text-slate-400 hover:border-primary/50 hover:text-white'
                                     }`}
                             >
                                 <User size={16} />
@@ -82,8 +128,8 @@ const LoginModal = ({ isOpen, onClose }) => {
                                 type="button"
                                 onClick={() => setRole('admin')}
                                 className={`relative flex items-center justify-center gap-2 h-11 rounded-lg border transition-all ${role === 'admin'
-                                        ? 'bg-primary/20 border-primary text-white'
-                                        : 'bg-[#161e2e] border-[#232f48] text-slate-400 hover:border-primary/50 hover:text-white'
+                                    ? 'bg-primary/20 border-primary text-white'
+                                    : 'bg-[#161e2e] border-[#232f48] text-slate-400 hover:border-primary/50 hover:text-white'
                                     }`}
                             >
                                 <Shield size={16} />
