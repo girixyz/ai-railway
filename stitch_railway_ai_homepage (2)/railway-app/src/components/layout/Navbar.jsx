@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useDemo } from '@/context/DemoContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import LoginModal from '@/components/auth/LoginModal';
+import DemoModal from '@/components/demo/DemoModal';
 
 const Navbar = () => {
+    const { openDemoModal, closeDemoModal, isDemoModalOpen } = useDemo();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
 
@@ -40,7 +43,7 @@ const Navbar = () => {
                         >
                             <span>Log In</span>
                         </button>
-                        <Button className="font-bold shadow-[0_0_15px_rgba(19,91,236,0.5)]">
+                        <Button onClick={openDemoModal} className="font-bold shadow-[0_0_15px_rgba(19,91,236,0.5)]">
                             Request Demo
                         </Button>
                         <div className="md:hidden text-white cursor-pointer" onClick={toggleMobileMenu}>
@@ -63,12 +66,13 @@ const Navbar = () => {
                         >
                             Log In
                         </button>
-                        <Button className="w-full font-bold">Request Demo</Button>
+                        <Button onClick={openDemoModal} className="w-full font-bold">Request Demo</Button>
                     </div>
                 )}
             </header>
 
             <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+            <DemoModal isOpen={isDemoModalOpen} onClose={closeDemoModal} />
         </>
     );
 };

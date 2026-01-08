@@ -1,6 +1,9 @@
 import React from 'react';
 
+import { useDemo } from '@/context/DemoContext';
+
 const KPIGrid = () => {
+    const { isDemoMode } = useDemo();
     return (
         <div className="lg:col-span-3 flex flex-col gap-4">
             {/* Wagons Scanned */}
@@ -33,13 +36,25 @@ const KPIGrid = () => {
                     </span>
                 </div>
                 <div className="flex gap-2 mt-4">
-                    <div className="flex-1 bg-[#232f48] rounded px-2 py-1 text-center">
+                    <div className="flex-1 bg-[#232f48] rounded px-2 py-1 text-center relative overflow-hidden">
                         <span className="text-xs text-gray-400 block">Critical</span>
-                        <span className="text-sm font-bold text-red-400">42</span>
+                        {isDemoMode ? (
+                            <div className="flex justify-center items-center mt-0.5">
+                                <span className="material-symbols-outlined text-sm text-gray-500">lock</span>
+                            </div>
+                        ) : (
+                            <span className="text-sm font-bold text-red-400">42</span>
+                        )}
                     </div>
-                    <div className="flex-1 bg-[#232f48] rounded px-2 py-1 text-center">
+                    <div className="flex-1 bg-[#232f48] rounded px-2 py-1 text-center relative overflow-hidden">
                         <span className="text-xs text-gray-400 block">Major</span>
-                        <span className="text-sm font-bold text-orange-400">156</span>
+                        {isDemoMode ? (
+                            <div className="flex justify-center items-center mt-0.5">
+                                <span className="material-symbols-outlined text-sm text-gray-500">lock</span>
+                            </div>
+                        ) : (
+                            <span className="text-sm font-bold text-orange-400">156</span>
+                        )}
                     </div>
                     <div className="flex-1 bg-[#232f48] rounded px-2 py-1 text-center">
                         <span className="text-xs text-gray-400 block">Minor</span>
@@ -54,12 +69,19 @@ const KPIGrid = () => {
                     <span className="material-symbols-outlined text-6xl">lens_blur</span>
                 </div>
                 <p className="text-[#92a4c9] text-sm font-medium uppercase tracking-wider mb-1">Avg. Blur Correction</p>
-                <div className="flex items-baseline gap-2">
-                    <h3 className="text-4xl font-bold text-white">92%</h3>
-                    <span className="text-[#0bda5e] text-sm font-bold flex items-center">
-                        <span className="material-symbols-outlined text-base">trending_up</span> 2%
-                    </span>
-                </div>
+                {isDemoMode ? (
+                    <div className="flex items-center justify-center h-12 bg-white/5 rounded-lg border border-white/10 my-1">
+                        <span className="material-symbols-outlined text-gray-400">lock</span>
+                        <span className="text-xs text-gray-400 ml-2 uppercase font-bold tracking-wider">Premium Feature</span>
+                    </div>
+                ) : (
+                    <div className="flex items-baseline gap-2">
+                        <h3 className="text-4xl font-bold text-white">92%</h3>
+                        <span className="text-[#0bda5e] text-sm font-bold flex items-center">
+                            <span className="material-symbols-outlined text-base">trending_up</span> 2%
+                        </span>
+                    </div>
+                )}
                 <p className="text-xs text-gray-500 mt-2">Motion compensation active at speeds &gt; 120km/h</p>
             </div>
 
