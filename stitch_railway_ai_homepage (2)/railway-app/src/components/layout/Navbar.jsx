@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { useDemo } from '@/context/DemoContext';
-
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import LoginModal from '@/components/auth/LoginModal';
-import DemoModal from '@/components/demo/DemoModal';
 
 const Navbar = () => {
-    const { openDemoModal, closeDemoModal, isDemoModalOpen } = useDemo();
     const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
@@ -105,7 +101,6 @@ const Navbar = () => {
             </header>
 
             <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
-            <DemoModal isOpen={isDemoModalOpen} onClose={closeDemoModal} />
         </>
     );
 };
