@@ -1,13 +1,37 @@
-/.kombai
-/.qodo
-/blurred_sharp
-*.mp4
-*.zip
-README.dataset.txt
-README.md
-README.roboflow.txt
-frames/
-TRAINING DATASET/
-training data
-extracted_frames/
+*.png
+*.jpg
+*.jpeg
+/dataset/
+/output/
+# Dependencies
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
 .env
+.env.local
