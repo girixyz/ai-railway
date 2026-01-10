@@ -2,24 +2,23 @@ import os
 from torch.utils.data import Dataset
 from PIL import Image
 import torchvision.transforms as transforms
+import torchvision.transforms.functional as TF
+import random
 
 class DeblurDataset(Dataset):
-    def __init__(self, root_dir, transform=None):
+    def __init__(self, root_dir, transform=None, augment=False):
         """
         Args:
             root_dir (string): Directory with all the images. 
-                               Expects 'blurred' and 'sharp' subdirectories.
-            transform (callable, optional): Optional transform to be applied
-                                            on a sample.
+                               Expects 'blurred_sharp' containing 'blurred' and 'sharp' subdirectories.
+            transform (callable, optional): Optional transform to be applied.
+            augment (bool, optional): Whether to apply random data augmentation (flips/rotations).
         """
         self.root_dir = root_dir
         self.transform = transform
-        self.parsed_root = os.path.join(root_dir, "blurred_sharp") # Based on user's path structure
+        self.augment = augment
         
-        # Check if the path structure is simply root/blurred and root/sharp or root/blurred_sharp/blurred...
-        # The user provided path is c:\New folder\blurred_sharp\blurred_sharp
-        # containing 'blurred' and 'sharp' folders.
-        
+        self.parsed_root = os.path.join(root_dir, "blurred_sharp") 
         self.blur_dir = os.path.join(self.parsed_root, "blurred")
         self.sharp_dir = os.path.join(self.parsed_root, "sharp")
         
@@ -41,18 +40,26 @@ class DeblurDataset(Dataset):
         blur_image = Image.open(blur_path).convert("RGB")
         sharp_image = Image.open(sharp_path).convert("RGB")
 
-        if self.transform:
-            # We need to apply the same random transform to both if it's geometric
-            # For simplicity in this demo, we assume deterministic transforms or just ToTensor + Resize
-            # Ideally, seed logic or functional transforms should be used for random crops/flips
-            blur_image = self.transform(blur_image)
-            sharp_image = self.transform(sharp_image)
-        else:
-            default_transform = transforms.Compose([
-                transforms.Resize((256, 256)), # Fixed size for UNet
-                transforms.ToTensor()
-            ])
-            blur_image = default_transform(blur_image)
-            sharp_image = default_transform(sharp_image)
+        # Resize first to ensure consistent size
+        resize = transforms.Resize((256, 256))
+        blur_image = resize(blur_image)
+        sharp_image = resize(sharp_image)
+
+        # Apply Paired Augmentation
+        if self.augment:
+            # Random Horizontal Flip
+            if random.random() > 0.5:
+                blur_image = TF.hflip(blur_image)
+                sharp_image = TF.hflip(sharp_image)
+            
+            # Random Vertical Flip
+            if random.random() > 0.5:
+                blur_image = TF.vflip(blur_image)
+                sharp_image = TF.vflip(sharp_image)
+
+        # ToTensor
+        to_tensor = transforms.ToTensor()
+        blur_image = to_tensor(blur_image)
+        sharp_image = to_tensor(sharp_image)
 
         return blur_image, sharp_image

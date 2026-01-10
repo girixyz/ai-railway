@@ -1,7 +1,9 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.streamer import VideoStreamer
-from app.utils import extract_frames_from_video
+from app.utils import extract_frames_from_video, process_video_with_yolo
+from samples import mod_train
 import asyncio
 import os
 import shutil
@@ -19,8 +21,13 @@ app.add_middleware(
 # Initialize Streamer
 # path to dataset
 DATASET_PATH = r"c:\New folder\blurred_sharp"
-MODEL_PATH = "checkpoints/best_model.pth"
+MODEL_PATH = r"c:\New folder\best.pth" 
 DEVICE = "cpu" # Default to CPU for safer demo on mixed hardware
+
+# Mount static files
+if not os.path.exists("backend/static"):
+    os.makedirs("backend/static/processed_videos", exist_ok=True)
+app.mount("/static", StaticFiles(directory="backend/static"), name="static")
 
 streamer = VideoStreamer(DATASET_PATH, MODEL_PATH, DEVICE)
 
@@ -42,38 +49,63 @@ async def upload_video(file: UploadFile = File(...)):
     try:
         # Define paths
         temp_video_path = f"temp_{file.filename}"
-        # Store extracted frames in a 'custom_upload' folder inside the dataset path or a separate temp folder
-        # For simplicity, creating a new folder beside the app
         output_dir = os.path.join(os.getcwd(), "uploaded_frames")
+        
+        # Define processed video path
+        processed_filename = f"processed_{file.filename}"
+        processed_video_path = os.path.join("backend/static/processed_videos", processed_filename)
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(processed_video_path), exist_ok=True)
         
         # Save uploaded video
         with open(temp_video_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
             
-        # Clear existing frames in output directory if any
+        # 1. Process with YOLO
+        print("Processing video with YOLO model...")
+        try:
+             # Using absolute path for output to ensure cv2 writes correctly
+            abs_processed_path = os.path.abspath(processed_video_path)
+            process_video_with_yolo(temp_video_path, abs_processed_path, MODEL_PATH)
+            video_url = f"http://localhost:8000/static/processed_videos/{processed_filename}"
+        except Exception as e:
+            print(f"Error processing video: {e}")
+            video_url = None
+
+        # 2. Extract frames (keeping existing logic for legacy/compatibility)
         if os.path.exists(output_dir):
             shutil.rmtree(output_dir)
         os.makedirs(output_dir)
         
-        # Extract frames
         num_frames = extract_frames_from_video(temp_video_path, output_dir)
         
         # Cleanup video file
         os.remove(temp_video_path)
         
+        # Send frames to mod_train.py
+        try:
+            print("Sending frames to mod_train.py...")
+            mod_train.process_frames(output_dir)
+        except Exception as e:
+             print(f"Error processing frames in mod_train: {e}")
+
         # Update Streamer
         success = streamer.reload_images(output_dir)
         
         if not success:
-             raise HTTPException(status_code=500, detail="Failed to load images from extracted video")
+             print("Warning: Failed to load images from extracted video into streamer")
+             # Don't raise error, as video processing might have succeeded
 
         return {
             "message": "Video processed successfully",
             "frames_extracted": num_frames,
-            "status": "Stream updated"
+            "status": "Stream updated",
+            "video_url": video_url
         }
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -1,4 +1,13 @@
 /.kombai
 /.qodo
 /blurred_sharp
-/frontend
+*.mp4
+*.zip
+README.dataset.txt
+README.md
+README.roboflow.txt
+frames/
+TRAINING DATASET/
+training data
+extracted_frames/
+.env

@@ -43,3 +43,44 @@ def extract_frames_from_video(video_path, output_dir, verbose=False):
 
     cap.release()
     return saved_count
+
+def process_video_with_yolo(input_path, output_path, model_path):
+    """
+    Processes a video using a YOLO model and saves the annotated video.
+    """
+    try:
+        from ultralytics import YOLO
+    except ImportError:
+        raise ImportError("ultralytics module is not installed. Please install it.")
+
+    model = YOLO(model_path)
+    
+    cap = cv2.VideoCapture(input_path)
+    if not cap.isOpened():
+        raise ValueError(f"Could not open video source {input_path}")
+        
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    
+    # Define codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v') # or 'avc1'
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+            
+        # Run inference
+        results = model(frame)
+        
+        # Plot results on the frame
+        annotated_frame = results[0].plot()
+        
+        out.write(annotated_frame)
+        
+    cap.release()
+    out.release()
+    return output_path
+
