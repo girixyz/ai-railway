@@ -1,11 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 
-import { Link } from 'react-router-dom';
-import { useDemo } from '@/context/DemoContext';
 
 const Hero = () => {
-    const { openDemoModal } = useDemo();
     return (
         <div className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
             {/* Background with Gradient Overlay */}
@@ -28,15 +26,15 @@ const Hero = () => {
                     Next-Gen Visual Inspection for High-Speed Rail operating on edge devices. Detect anomalies in real-time with military-grade precision.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button onClick={openDemoModal} className="h-12 px-8 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-base transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(19,91,236,0.4)]">
-                        <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                        Watch System Demo
-                    </Button>
-                    <Link to="/technology">
-                        <Button variant="secondary" className="h-12 px-8 rounded-lg border border-[#232f48] bg-[#1a2332] hover:bg-[#232f48] text-white font-medium text-base transition-all">
-                            Explore Technology
+                    <Link to="/demo">
+                        <Button className="h-12 px-8 rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-base transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(19,91,236,0.4)]">
+                            <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                            Watch System Demo
                         </Button>
                     </Link>
+                    <Button variant="secondary" className="h-12 px-8 rounded-lg border border-[#232f48] bg-[#1a2332] hover:bg-[#232f48] text-white font-medium text-base transition-all">
+                        Explore Technology
+                    </Button>
                 </div>
             </div>
 

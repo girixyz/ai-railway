@@ -1,9 +1,8 @@
 import React from 'react';
 
-import { useDemo } from '@/context/DemoContext';
+import { Link } from 'react-router-dom';
 
 const TechHero = () => {
-    const { openDemoModal } = useDemo();
     return (
         <div className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-background-dark">
             {/* Abstract Grid Background simulating 3D space */}
@@ -25,11 +24,13 @@ const TechHero = () => {
                         Our proprietary GAN-based pipeline reconstructs high-fidelity visuals from motion-blurred feeds in real-time. Explore the layers of our edge inspection architecture.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                        <button onClick={openDemoModal} className="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-primary text-white text-base font-bold transition-all hover:scale-105 shadow-[0_0_20px_rgba(19,91,236,0.5)]">
-                            <span className="material-symbols-outlined text-[20px]">play_circle</span>
-                            Start Simulation
-                        </button>
-                        <button onClick={openDemoModal} className="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-white/5 border border-white/10 text-white text-base font-bold hover:bg-white/10 transition-all">
+                        <Link to="/demo">
+                            <button className="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-primary text-white text-base font-bold transition-all hover:scale-105 shadow-[0_0_20px_rgba(19,91,236,0.5)]">
+                                <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                                Start Simulation
+                            </button>
+                        </Link>
+                        <button className="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-white/5 border border-white/10 text-white text-base font-bold hover:bg-white/10 transition-all">
                             <span className="material-symbols-outlined text-[20px]">download</span>
                             Technical Whitepaper
                         </button>
